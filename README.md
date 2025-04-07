@@ -67,8 +67,7 @@
 
 <br>
 5-2 백엔드<br>
-<img src="https://github.com/dev-sein/dev-sein/assets/122762143/fe6adb96-e884-49a1-a8e8-a1baec2352fa">
-<img src="https://github.com/dev-sein/dev-sein/assets/122762143/b61f98f8-b23a-46c3-bf3d-0b0983e4213b">
+<img src="https://github.com/Jakej92/TeamProject-Pick-Course/blob/master/assets/backend-progress.png?raw=true">
 
 
 ▶ 메인
