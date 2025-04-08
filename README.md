@@ -37,6 +37,10 @@
   - Tomcat
   - JDK 11.0.15
 
+🗄️ 데이터베이스 & DB 툴
+  - Oracle Database
+  - DBeaver
+
 🌐 API & 외부 서비스
   - Kakao Deverlopers (지도 API, 로그인 API)
   - CoolSMS API
@@ -53,6 +57,9 @@
 📷 기타 도구
   - Thumbnailator
   - Lombok
+
+🧪 테스트 & 디버깅
+  - Postman
 
 <h2>4. ERD</h2>
 <img src="https://github.com/Jakej92/TeamProject-Pick-Course/blob/master/assets/pickcourse-erd.png?raw=true">
