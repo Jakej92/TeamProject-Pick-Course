@@ -158,17 +158,17 @@
     
 3.  쪽지 전송 시 수신자 이메일 정보가 존재하지 않아 전송 실패
 
-        문제
-        존재하지 않는 이메일로 메시지를 전송하려 할 때 Optional.get() 사용으로 인해 NoSuchElementException이 발생할 수 있었음.
+   문제
+      존재하지 않는 이메일로 메시지를 전송하려 할 때 Optional.get() 사용으로 인해 NoSuchElementException이 발생할 수 있었음.
         
-        원인
-        memberDAO.findIdByEmail() 호출 결과가 empty일 수 있음에도 불구하고 예외 처리를 하지 않고 바로 .get()으로 ID를 추출했음.
+  원인
+    memberDAO.findIdByEmail() 호출 결과가 empty일 수 있음에도 불구하고 예외 처리를 하지 않고 바로 .get()으로 ID를 추출했음.
         
-        해결 방법
-        Optional 객체에 대해 isEmpty() 체크를 먼저 수행하고, 없는 경우 사용자에게 오류 메시지를 출력하도록 개선.
+  해결 방법
+    Optional 객체에 대해 isEmpty() 체크를 먼저 수행하고, 없는 경우 사용자에게 오류 메시지를 출력하도록 개선.
         
-        배운 점
-        Optional은 무조건 .get()으로 꺼내는 것이 아닌, 상황에 따라 orElseThrow(), isPresent() 등의 안전한 방식으로 접근하는 습관이 중요함.
+  배운 점
+    Optional은 무조건 .get()으로 꺼내는 것이 아닌, 상황에 따라 orElseThrow(), isPresent() 등의 안전한 방식으로 접근하는 습관이 중요함.
  
 4. 카카오 로그인과 이메일 로그인의 사용자 세션 구분 문제
 
@@ -189,6 +189,10 @@
         로그인 방식에 따라 사용자 경험이나 보안 흐름이 달라질 수 있기 때문에
         세션 구조를 유연하게 설계하고 상태를 명확히 구분하는 것이 중요하다는 것을 알게 됐다.
         
+5. qwe
+
+        ![image](https://github.com/user-attachments/assets/e5273ba6-78ee-4155-99ba-5cc44fce87f4)
+
 
 <h2>7. 느낀점</h2>
 
