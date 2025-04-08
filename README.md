@@ -27,7 +27,6 @@
   - Spring Boot
   - MyBatis
   - JSON
-  - JSP
 
 🛠️ 개발 환경 & IDE
   - IntelliJ IDEA
