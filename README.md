@@ -42,30 +42,32 @@
 5-1 publishing
 <img src="https://github.com/Jakej92/TeamProject-Pick-Course/blob/master/assets/publishing-progress.png?raw=true">
 
-▶ 마이 페이지
-- 뱃지
-- 마이 페이지 메인
-- 찜한 목록
-- 내 정보 수정
-- 신청자 목록
-- 쪽지함
-- 쪽지 쓰기
-- 내 목록
-- 결제 내역
-
-▶ 메인 페이지
-- 메인 페이지
+▶ 관리자 페이지
+- 관리자 메인 페이지
+- 관리자 목록
+- 관리자 등록
+- 회원 목록
+- 신고 목록
+- 신고 상세
 - 공지 목록
 - 공지 상세
+- 공지 등록
+- 공지 수정
+- 코스 목록
+- 코스 상세
+- 코스 등록
+- 코스 수정
 
-▶ 회원
-- 회원 가입
-- 로그인
-- Kakao 로그인 API 활용
-- 본인 인증
-- 비밀번호 찾기
-- 비밀번호 변경
-- 회원 탈퇴
+▶ 고객 센터
+- 자주 묻는 질문
+- 1:1 문의
+
+▶ 랭킹
+- 랭킹 목록
+  
+▶ 사이트 소개
+- 사이트 소개
+
 
 5-2 백엔드
 <img src="https://github.com/Jakej92/TeamProject-Pick-Course/blob/master/assets/backend-progress.png?raw=true">
