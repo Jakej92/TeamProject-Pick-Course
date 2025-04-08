@@ -21,6 +21,7 @@
 <h2>3. 프로젝트 사용 툴</h2>
 - Java<br>
 - Javascript<br>
+- IntelliJ<br>
 - tomcat<br>
 - ORACLE<br>
 - Spring Boot<br>
