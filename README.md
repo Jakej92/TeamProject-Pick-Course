@@ -1,4 +1,4 @@
-# Pick+Course - http://43.203.69.19:10000/
+## Pick+Course - http://43.203.69.19:10000/
 
 <h1>여행코스 추천 프로그램 - 'PickCourse'</h1>
 
