@@ -34,7 +34,7 @@ ________________________________________________________________________________
   - Visual Studio Code
   - Sourcetree
   - Git, Github
-  - Tomcat
+  - Apache Tomcat
   - JDK 11.0.15
 
 🗄️ 데이터베이스 & DB 툴
