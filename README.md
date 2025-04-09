@@ -1,6 +1,7 @@
 # Jake - Pick+Course
 
 <h1>여행코스 추천 프로그램 - 'PickCourse'</h1>
+asdasd
 
 <h2>1. 기획 의도</h2>
 
