@@ -1,6 +1,5 @@
-<h1>여행코스 추천 프로그램 - 'PickCourse'</h1>
-
-## Pick+Course - http://43.203.69.19:10000/
+<h1>여행코스 추천 프로그램 - 'PickCourse'</h1><br>
+<span>Pick+Course - http://43.203.69.19:10000/</span>
 
 <h2>1. 기획 의도</h2>
 
