@@ -97,7 +97,8 @@ ________________________________________________________________________________
 
 
 5-2 백엔드
-<img src="https://github.com/Jakej92/TeamProject-Pick-Course/blob/master/assets/backend-progress.png?raw=true">
+
+<img src="https://github.com/user-attachments/assets/2bd23b9d-fedc-4ae7-9c18-4018f43463cb">
 
 ▶ 마이 페이지
 - 마이 메인 페이지 / 뱃지
