@@ -27,6 +27,7 @@
   - Spring Boot
   - MyBatis
   - JSON
+  - Thymeleaf
 
 🛠️ 개발 환경 & IDE
   - IntelliJ IDEA
