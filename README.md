@@ -1,7 +1,7 @@
 <h1>여행코스 추천 프로그램 - 'PickCourse'</h1>
 
 <Strong>Pick+Course</Strong> - http://43.203.69.19:10000/
-
+_________________________________________________________________________________
 <h2>1. 기획 의도</h2>
 
 <img src="https://github.com/user-attachments/assets/282ff927-1586-4515-a50f-905585aebb8e"/>
