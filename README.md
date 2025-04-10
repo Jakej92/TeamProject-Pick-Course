@@ -154,21 +154,21 @@ ________________________________________________________________________________
 
 1. 파일 업로드 중 NoSuchFileException 발생
 
-  문제<br>
-  파일 업로드 기능 구현 중, file.transferTo() 호출 시 NoSuchFileException이 발생함.<br>
-  <br>
-  원인<br>
-  업로드 경로인 /upload/yyyy/MM/dd 디렉토리가 존재하지 않는 상태에서 파일 저장을 시도해 예외가 발생.<br>
-  디렉토리 생성 로직이 누락되어 있었음.<br>
-  <br>
+    문제<br>
+      파일 업로드 기능 구현 중, file.transferTo() 호출 시 NoSuchFileException이 발생함.<br>
+      <br>
+      원인<br>
+      업로드 경로인 /upload/yyyy/MM/dd 디렉토리가 존재하지 않는 상태에서 파일 저장을 시도해 예외가 발생.<br>
+      디렉토리 생성 로직이 누락되어 있었음.<br>
+      <br>
   💥 오류 발생 코드
 
         file.transferTo(new File(rootPath, uuid.toString() + "_" + file.getOriginalFilename()));
 
-  해결 방법<br>
-  File 객체를 통해 해당 경로가 존재하는지 확인한 후,<br>
-  존재하지 않을 경우 mkdirs()를 통해 디렉토리를 먼저 생성하도록 처리.<br>
-  <br>
+    해결 방법<br>
+      File 객체를 통해 해당 경로가 존재하는지 확인한 후,<br>
+      존재하지 않을 경우 mkdirs()를 통해 디렉토리를 먼저 생성하도록 처리.<br>
+      <br>
   ✅ 수정된 코드
   
         File directory = new File(rootPath);
@@ -179,30 +179,30 @@ ________________________________________________________________________________
         file.transferTo(new File(rootPath, uuid.toString() + "_" + file.getOriginalFilename()));
 
 
-  배운 점<br>
-  파일 업로드 시 디렉토리 생성 여부를 사전에 확인하는 것이 중요하며, <br>
-  실제 서버 환경에서는 디스크 경로나 권한 등 시스템적인 요소도 오류를 유발할 수 있다는 점을 인식하게 되었다. <br>
-  앞으로는 transferTo() 호출 전에 반드시 디렉토리 체크를 습관화하려고 한다. <br>
+    배운 점<br>
+      파일 업로드 시 디렉토리 생성 여부를 사전에 확인하는 것이 중요하며, <br>
+      실제 서버 환경에서는 디스크 경로나 권한 등 시스템적인 요소도 오류를 유발할 수 있다는 점을 인식하게 되었다. <br>
+      앞으로는 transferTo() 호출 전에 반드시 디렉토리 체크를 습관화하려고 한다. <br>
 
 2. 파일 첨부 없이 메시지 전송 시 NullPointerException 발생
 
    문제<br>
-   파일 없이 메시지를 전송할 때, <br>
-   file.getOriginalFilename().equals("") 조건에서 NullPointerException이 발생함. <br>
+     파일 없이 메시지를 전송할 때, <br>
+     file.getOriginalFilename().equals("") 조건에서 NullPointerException이 발생함. <br>
         <br>
    원인<br>
-   MultipartFile이 null이거나, 첨부되지 않은 상태일 경우<br>
-   getOriginalFilename()이 null을 반환할 수 있음에도 불구하고<br>
-   바로 .equals("")를 호출하여 예외가 발생함.<br>
+     MultipartFile이 null이거나, 첨부되지 않은 상태일 경우<br>
+     getOriginalFilename()이 null을 반환할 수 있음에도 불구하고<br>
+     바로 .equals("")를 호출하여 예외가 발생함.<br>
    <br>
    💥 오류 발생 코드
     
         if (file.getOriginalFilename().equals("")) {
         // 파일 없음 처리
         }
-  file 또는 file.getOriginalFilename()이 null인 경우 NPE 발생 가능성 있음 <br>
+    file 또는 file.getOriginalFilename()이 null인 경우 NPE 발생 가능성 있음 <br>
   <br>
-  해결 방법<br>
+    해결 방법<br>
         MultipartFile의 isEmpty() 체크와 getOriginalFilename()에 대한 null 및 공백 체크를 통해 안전하게 조건을 처리함.<br>
   <br>
   ✅ 수정된 코드
@@ -213,30 +213,30 @@ ________________________________________________________________________________
             log.info("파일 이름: {}", file.getOriginalFilename());
         }
   
-  배운 점<br>
-  외부에서 입력받는 객체의 상태는 항상 불완전할 수 있다는 전제 하에,<br>
-  null 안전성을 고려한 방어적 코드 작성이 필수적임을 배웠다.<br>
-  특히 파일 업로드와 같은 입력 기반 기능에서는 .equals()나 .get()과 같은 메서드를<br>
-  바로 호출하지 않고, 항상 선행 조건을 점검하는 습관이 필요하다는 점을 체감했다.<br>
+    배운 점<br>
+      외부에서 입력받는 객체의 상태는 항상 불완전할 수 있다는 전제 하에,<br>
+      null 안전성을 고려한 방어적 코드 작성이 필수적임을 배웠다.<br>
+      특히 파일 업로드와 같은 입력 기반 기능에서는 .equals()나 .get()과 같은 메서드를<br>
+      바로 호출하지 않고, 항상 선행 조건을 점검하는 습관이 필요하다는 점을 체감했다.<br>
     
 3. 쪽지 전송 시 수신자 이메일 정보가 존재하지 않아 전송 실패
 
-  문제<br>
-  존재하지 않는 이메일로 메시지를 전송하려 할 때<br>
-  Optional.get()을 바로 호출하여 NoSuchElementException이 발생할 수 있었음.<br>
-  <br>
-  원인<br>
-  memberDAO.findIdByEmail() 호출 결과가 Optional.empty일 수 있음에도 불구하고<br>
-  예외 처리를 하지 않고 .get()으로 직접 ID를 꺼내는 방식으로 구현함.<br>
-  <br>
+    문제<br>
+      존재하지 않는 이메일로 메시지를 전송하려 할 때<br>
+      Optional.get()을 바로 호출하여 NoSuchElementException이 발생할 수 있었음.<br>
+    <br>
+    원인<br>
+      memberDAO.findIdByEmail() 호출 결과가 Optional.empty일 수 있음에도 불구하고<br>
+      예외 처리를 하지 않고 .get()으로 직접 ID를 꺼내는 방식으로 구현함.<br>
+    <br>
   💥 오류 발생 코드
 
         Long receiverId = memberDAO.findIdByEmail(sendMessageDTO.getReceiverEmail()).get();
-  findIdByEmail()이 결과를 반환하지 못한 경우, get() 호출 시 예외 발생<br>
+      findIdByEmail()이 결과를 반환하지 못한 경우, get() 호출 시 예외 발생<br>
   <br>
-  해결 방법<br>
-  Optional에 대해 isEmpty() 또는 isPresent() 체크를 먼저 수행하고,<br>
-  결과가 없을 경우 사용자에게 오류 메시지를 출력하도록 개선함.<br>
+    해결 방법<br>
+      Optional에 대해 isEmpty() 또는 isPresent() 체크를 먼저 수행하고,<br>
+      결과가 없을 경우 사용자에게 오류 메시지를 출력하도록 개선함.<br>
   <br>
   ✅ 수정된 코드
 
@@ -248,55 +248,55 @@ ________________________________________________________________________________
         
         sendMessageDTO.setReceiverId(receiverId.get());
   
-  배운 점<br>
-  Optional은 단순히 null을 숨기기 위한 도구가 아닌,<br>
-  안전하고 명시적인 값 처리 방식을 위한 도구라는 점을 깨달았다.<br>
-  앞으로는 무조건 .get()을 사용하는 방식이 아닌,<br>
-  isEmpty(), orElseThrow(), orElseGet(), ifPresent() 등 상황에 맞는 안전한 접근 방식을 사용해야 함을 배웠다.<br>
+    배운 점<br>
+      Optional은 단순히 null을 숨기기 위한 도구가 아닌,<br>
+      안전하고 명시적인 값 처리 방식을 위한 도구라는 점을 깨달았다.<br>
+      앞으로는 무조건 .get()을 사용하는 방식이 아닌,<br>
+      isEmpty(), orElseThrow(), orElseGet(), ifPresent() 등 상황에 맞는 안전한 접근 방식을 사용해야 함을 배웠다.<br>
  
 4. 카카오 로그인과 이메일 로그인의 사용자 세션 구분 문제
 
-  문제<br>
-  로그인 기능 구현 초기에,<br>
-  카카오 소셜 로그인과 일반 이메일 로그인을 동일한 세션 구조로 처리하면서<br>
-  사용자 인증 상태를 구분하기 어려웠음.<br>
+    문제<br>
+      로그인 기능 구현 초기에,<br>
+      카카오 소셜 로그인과 일반 이메일 로그인을 동일한 세션 구조로 처리하면서<br>
+      사용자 인증 상태를 구분하기 어려웠음.<br>
   
-  원인<br>
-  두 로그인 방식 모두 로그인 시 아래와 같이 동일하게 사용자 정보를 세션에 저장함:
+    원인<br>
+      두 로그인 방식 모두 로그인 시 아래와 같이 동일하게 사용자 정보를 세션에 저장함:
 
         session.setAttribute("member", memberDTO);
   
-  하지만 로그아웃 처리 방식은 로그인 유형에 따라 달라야 했음.<br>
-  예를 들어,<br>
-  - 일반 로그인은 세션 종료로 로그아웃이 완료되지만,<br>
-  - 카카오 로그인은 카카오 API를 통해 로그아웃 처리를 따로 해줘야 했기 때문에<br>
-  로그인 유형을 명시적으로 구분할 수 있는 상태 값이 필요했음.<br>
+      하지만 로그아웃 처리 방식은 로그인 유형에 따라 달라야 했음.<br>
+      예를 들어,<br>
+      - 일반 로그인은 세션 종료로 로그아웃이 완료되지만,<br>
+      - 카카오 로그인은 카카오 API를 통해 로그아웃 처리를 따로 해줘야 했기 때문에<br>
+      로그인 유형을 명시적으로 구분할 수 있는 상태 값이 필요했음.<br>
   <br>
   💥 초기 코드 (세션 구분 없음)
 
-        session.setAttribute("member", memberDTO); // 이메일 & 카카오 로그인 공통 처리
+       session.setAttribute("member", memberDTO); // 이메일 & 카카오 로그인 공통 처리
 
   
-  해결 방법<br>
-  로그인 방식에 따라 별도의 상태 값을 세션에 함께 저장하도록 개선함.<br>
-  예를 들어, 이메일 로그인 시 "email", 카카오 로그인 시 "kakao"라는 값을 추가 저장:<br>
-  <br>
+    해결 방법<br>
+      로그인 방식에 따라 별도의 상태 값을 세션에 함께 저장하도록 개선함.<br>
+      예를 들어, 이메일 로그인 시 "email", 카카오 로그인 시 "kakao"라는 값을 추가 저장:<br>
+    <br>
   ✅ 수정된 코드
 
-      session.setAttribute("member", memberDTO);
+        session.setAttribute("member", memberDTO);
+    
+        // 로그인 방식에 따른 상태 구분 추가
+        session.setAttribute("memberStatus", "email"); // 일반 로그인
+        // 또는
+        session.setAttribute("memberStatus", "kakao"); // 카카오 로그인
 
-      // 로그인 방식에 따른 상태 구분 추가
-      session.setAttribute("memberStatus", "email"); // 일반 로그인
-      // 또는
-      session.setAttribute("memberStatus", "kakao"); // 카카오 로그인
-
-  이후 기능 조건문에서 memberStatus 값을 통해 분기 처리 가능<br>
+    이후 기능 조건문에서 memberStatus 값을 통해 분기 처리 가능<br>
   <br>
-  배운 점<br>
-  처음에는 세션에 사용자 객체 하나만 저장해도 충분하다고 생각했지만,<br>
-  실제로는 로그인 방식, 접근 권한, 사용자 경험 등의 관점에서 구분된 상태 정보가 매우 중요하다는 것을 배움.<br>
-  특히 소셜 로그인과 일반 로그인은 인증 흐름이 다르고,<br>
-  이에 맞춘 세션 설계와 조건 분기 로직이 필요하다는 점을 실감했다.<br>
+    배운 점<br>
+      처음에는 세션에 사용자 객체 하나만 저장해도 충분하다고 생각했지만,<br>
+      실제로는 로그인 방식, 접근 권한, 사용자 경험 등의 관점에서 구분된 상태 정보가 매우 중요하다는 것을 배움.<br>
+      특히 소셜 로그인과 일반 로그인은 인증 흐름이 다르고,<br>
+      이에 맞춘 세션 설계와 조건 분기 로직이 필요하다는 점을 실감했다.<br>
         
 6. SMS 인증번호 재사용 및 보안 취약 문제
 
