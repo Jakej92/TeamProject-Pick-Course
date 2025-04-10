@@ -208,13 +208,13 @@ ________________________________________________________________________________
   <br>
   ✅ 수정된 코드
 
-        if (file == null || file.isEmpty()) {
-        log.warn("파일이 비어있습니다.");
-        } else {
-            log.info("파일 이름: {}", file.getOriginalFilename());
-        }
-   
-    배운 점<br>
+          if (file == null || file.isEmpty()) {
+          log.warn("파일이 비어있습니다.");
+          } else {
+              log.info("파일 이름: {}", file.getOriginalFilename());
+          }
+
+     배운 점<br>
       외부에서 입력받는 객체의 상태는 항상 불완전할 수 있다는 전제 하에,<br>
       null 안전성을 고려한 방어적 코드 작성이 필수적임을 배웠다.<br>
       특히 파일 업로드와 같은 입력 기반 기능에서는 .equals()나 .get()과 같은 메서드를<br>
