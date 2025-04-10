@@ -154,30 +154,41 @@ ________________________________________________________________________________
 
 1. 파일 업로드 중 NoSuchFileException 발생
 
-        문제
-        파일 업로드 기능 구현 중, file.transferTo() 호출 시 NoSuchFileException이 발생함.
+문제<br>
+파일 업로드 기능 구현 중, file.transferTo() 호출 시 NoSuchFileException이 발생함.<br>
+<br>
+원인<br>
+업로드 경로인 /upload/yyyy/MM/dd 디렉토리가 존재하지 않는 상태에서 파일 저장을 시도해 예외가 발생.<br>
+디렉토리 생성 로직이 누락되어 있었음.<br>
 
-        원인
-        업로드 경로인 /upload/yyyy/MM/dd 디렉토리가 존재하지 않는 상태에서 파일 저장을 시도해 예외가 발생.
-        디렉토리 생성 로직이 누락되어 있었음.
+        file.transferTo(new File(rootPath, uuid.toString() + "_" + file.getOriginalFilename()));
 
-        해결 방법
-        File 객체를 통해 해당 경로가 존재하는지 확인한 후,
-        존재하지 않을 경우 mkdirs()를 통해 디렉토리를 먼저 생성하도록 처리.
+해결 방법<br>
+File 객체를 통해 해당 경로가 존재하는지 확인한 후,<br>
+존재하지 않을 경우 mkdirs()를 통해 디렉토리를 먼저 생성하도록 처리.
 
-        배운 점
-        파일 업로드 시 디렉토리 생성 여부를 사전에 확인하는 것이 중요하며,
-        예상치 못한 시스템 I/O 오류에 대비한 예외 처리도 함께 고려해야 함.
+        File directory = new File(rootPath);
+        if (!directory.exists()) {
+            directory.mkdirs(); // 업로드 경로 없을 경우 생성
+        }
+        
+        file.transferTo(new File(rootPath, uuid.toString() + "_" + file.getOriginalFilename()));
+
+
+배운 점<br>
+파일 업로드 시 디렉토리 생성 여부를 사전에 확인하는 것이 중요하며, <br>
+실제 서버 환경에서는 디스크 경로나 권한 등 시스템적인 요소도 오류를 유발할 수 있다는 점을 인식하게 되었다. <br>
+앞으로는 transferTo() 호출 전에 반드시 디렉토리 체크를 습관화하려고 한다. <br>
 
 2. 파일 첨부 없이 메시지 전송 시 NullPointerException 발생
 
-   문제
-        파일 없이 메시지를 전송할 때,
-        file.getOriginalFilename().equals("") 조건에서 NullPointerException이 발생함.
-        
-        원인
-        파일 첨부가 없을 경우 getOriginalFilename()이 null을 반환할 수 있음에도 불구하고
-        바로 .equals()를 호출함으로써 예외가 발생.
+   문제<br>
+   파일 없이 메시지를 전송할 때, <br>
+   file.getOriginalFilename().equals("") 조건에서 NullPointerException이 발생함. <br>
+        <br>
+   원인<br>
+   파일 첨부가 없을 경우 getOriginalFilename()이 null을 반환할 수 있음에도 불구하고
+   바로 .equals()를 호출함으로써 예외가 발생.
         
         해결 방법
         MultipartFile의 isEmpty() 체크와 getOriginalFilename()에 대한 null 및 공백 체크를 통해 안전하게 조건을 처리함.
