@@ -171,7 +171,7 @@ ________________________________________________________________________________
 
 2. 파일 첨부 없이 메시지 전송 시 NullPointerException 발생
 
-        문제
+   문제
         파일 없이 메시지를 전송할 때,
         file.getOriginalFilename().equals("") 조건에서 NullPointerException이 발생함.
         
