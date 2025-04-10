@@ -152,15 +152,15 @@ ________________________________________________________________________________
 
 <h2>6. Trubleshooting</h2>
 
-1. 파일 업로드 중 NoSuchFileException 발생
+<h3>1. 파일 업로드 중 NoSuchFileException 발생</h3>
 
-    문제<br>
-      파일 업로드 기능 구현 중, file.transferTo() 호출 시 NoSuchFileException이 발생함.<br>
-      <br>
-      원인<br>
-      업로드 경로인 /upload/yyyy/MM/dd 디렉토리가 존재하지 않는 상태에서 파일 저장을 시도해 예외가 발생.<br>
-      디렉토리 생성 로직이 누락되어 있었음.<br>
-      <br>
+[문제]<br>
+파일 업로드 기능 구현 중, file.transferTo() 호출 시 NoSuchFileException이 발생함.<br>
+<br>
+[원인]<br>
+업로드 경로인 /upload/yyyy/MM/dd 디렉토리가 존재하지 않는 상태에서 파일 저장을 시도해 예외가 발생.<br>
+디렉토리 생성 로직이 누락되어 있었음.<br>
+<br>
   💥 오류 발생 코드
 
         file.transferTo(new File(rootPath, uuid.toString() + "_" + file.getOriginalFilename()));
@@ -179,33 +179,33 @@ ________________________________________________________________________________
         file.transferTo(new File(rootPath, uuid.toString() + "_" + file.getOriginalFilename()));
 
 
-    배운 점<br>
-      파일 업로드 시 디렉토리 생성 여부를 사전에 확인하는 것이 중요하며, <br>
-      실제 서버 환경에서는 디스크 경로나 권한 등 시스템적인 요소도 오류를 유발할 수 있다는 점을 인식하게 되었다. <br>
-      앞으로는 transferTo() 호출 전에 반드시 디렉토리 체크를 습관화하려고 한다. <br>
+[배운 점]<br>
+파일 업로드 시 디렉토리 생성 여부를 사전에 확인하는 것이 중요하며, <br>
+실제 서버 환경에서는 디스크 경로나 권한 등 시스템적인 요소도 오류를 유발할 수 있다는 점을 인식하게 되었다. <br>
+앞으로는 transferTo() 호출 전에 반드시 디렉토리 체크를 습관화하려고 한다. <br>
 
-2. 파일 첨부 없이 메시지 전송 시 NullPointerException 발생
+<h3>2. 파일 첨부 없이 메시지 전송 시 NullPointerException 발생</h3>
 
-   문제<br>
-     파일 없이 메시지를 전송할 때, <br>
-     file.getOriginalFilename().equals("") 조건에서 NullPointerException이 발생함. <br>
-        <br>
-   원인<br>
-     MultipartFile이 null이거나, 첨부되지 않은 상태일 경우<br>
-     getOriginalFilename()이 null을 반환할 수 있음에도 불구하고<br>
-     바로 .equals("")를 호출하여 예외가 발생함.<br>
-   <br>
+[문제]<br>
+파일 없이 메시지를 전송할 때, <br>
+file.getOriginalFilename().equals("") 조건에서 NullPointerException이 발생함. <br>
+<br>
+[원인]<br>
+MultipartFile이 null이거나, 첨부되지 않은 상태일 경우<br>
+getOriginalFilename()이 null을 반환할 수 있음에도 불구하고<br>
+바로 .equals("")를 호출하여 예외가 발생함.<br>
+<br>
    💥 오류 발생 코드
     
         if (file.getOriginalFilename().equals("")) {
         // 파일 없음 처리
         }
    
-    file 또는 file.getOriginalFilename()이 null인 경우 NPE 발생 가능성 있음 <br>
-    <br>
-    해결 방법<br>
-        MultipartFile의 isEmpty() 체크와 getOriginalFilename()에 대한 null 및 공백 체크를 통해 안전하게 조건을 처리함.<br>
-  <br>
+file 또는 file.getOriginalFilename()이 null인 경우 NPE 발생 가능성 있음 <br>
+<br>
+[해결 방법]<br>
+MultipartFile의 isEmpty() 체크와 getOriginalFilename()에 대한 null 및 공백 체크를 통해 안전하게 조건을 처리함.<br>
+<br>
   ✅ 수정된 코드
 
           if (file == null || file.isEmpty()) {
@@ -214,33 +214,33 @@ ________________________________________________________________________________
               log.info("파일 이름: {}", file.getOriginalFilename());
           }
 
-     <br>
-     배운 점<br>
-      외부에서 입력받는 객체의 상태는 항상 불완전할 수 있다는 전제 하에,<br>
-      null 안전성을 고려한 방어적 코드 작성이 필수적임을 배웠다.<br>
-      특히 파일 업로드와 같은 입력 기반 기능에서는 .equals()나 .get()과 같은 메서드를<br>
-      바로 호출하지 않고, 항상 선행 조건을 점검하는 습관이 필요하다는 점을 체감했다.<br>
+<br>
+[배운 점]<br>
+외부에서 입력받는 객체의 상태는 항상 불완전할 수 있다는 전제 하에,<br>
+null 안전성을 고려한 방어적 코드 작성이 필수적임을 배웠다.<br>
+특히 파일 업로드와 같은 입력 기반 기능에서는 .equals()나 .get()과 같은 메서드를<br>
+바로 호출하지 않고, 항상 선행 조건을 점검하는 습관이 필요하다는 점을 체감했다.<br>
     
-3. 쪽지 전송 시 수신자 이메일 정보가 존재하지 않아 전송 실패
+<h3>3. 쪽지 전송 시 수신자 이메일 정보가 존재하지 않아 전송 실패</h3>
 
-    문제<br>
-      존재하지 않는 이메일로 메시지를 전송하려 할 때<br>
-      Optional.get()을 바로 호출하여 NoSuchElementException이 발생할 수 있었음.<br>
-      <br>
-    원인<br>
-      memberDAO.findIdByEmail() 호출 결과가 Optional.empty일 수 있음에도 불구하고<br>
-      예외 처리를 하지 않고 .get()으로 직접 ID를 꺼내는 방식으로 구현함.<br>
-      <br>
+[문제]<br>
+존재하지 않는 이메일로 메시지를 전송하려 할 때<br>
+Optional.get()을 바로 호출하여 NoSuchElementException이 발생할 수 있었음.<br>
+<br>
+[원인]<br>
+memberDAO.findIdByEmail() 호출 결과가 Optional.empty일 수 있음에도 불구하고<br>
+예외 처리를 하지 않고 .get()으로 직접 ID를 꺼내는 방식으로 구현함.<br>
+<br>
   💥 오류 발생 코드
 
         Long receiverId = memberDAO.findIdByEmail(sendMessageDTO.getReceiverEmail()).get();
    
-      findIdByEmail()이 결과를 반환하지 못한 경우, get() 호출 시 예외 발생<br>
-    <br>
-    해결 방법<br>
-      Optional에 대해 isEmpty() 또는 isPresent() 체크를 먼저 수행하고,<br>
-      결과가 없을 경우 사용자에게 오류 메시지를 출력하도록 개선함.<br>
-    <br>
+findIdByEmail()이 결과를 반환하지 못한 경우, get() 호출 시 예외 발생<br>
+<br>
+[해결 방법]<br>
+Optional에 대해 isEmpty() 또는 isPresent() 체크를 먼저 수행하고,<br>
+결과가 없을 경우 사용자에게 오류 메시지를 출력하도록 개선함.<br>
+<br>
   ✅ 수정된 코드
 
         Optional<Long> receiverId = memberDAO.findIdByEmail(sendMessageDTO.getReceiverEmail());
@@ -251,40 +251,40 @@ ________________________________________________________________________________
         
         sendMessageDTO.setReceiverId(receiverId.get());
 
-     <br>  
-     배운 점<br>
-      Optional은 단순히 null을 숨기기 위한 도구가 아닌,<br>
-      안전하고 명시적인 값 처리 방식을 위한 도구라는 점을 깨달았다.<br>
-      앞으로는 무조건 .get()을 사용하는 방식이 아닌,<br>
-      isEmpty(), orElseThrow(), orElseGet(), ifPresent() 등 상황에 맞는 안전한 접근 방식을 사용해야 함을 배웠다.<br>
+<br>  
+[배운 점]<br>
+Optional은 단순히 null을 숨기기 위한 도구가 아닌,<br>
+안전하고 명시적인 값 처리 방식을 위한 도구라는 점을 깨달았다.<br>
+앞으로는 무조건 .get()을 사용하는 방식이 아닌,<br>
+isEmpty(), orElseThrow(), orElseGet(), ifPresent() 등 상황에 맞는 안전한 접근 방식을 사용해야 함을 배웠다.<br>
  
-4. 카카오 로그인과 이메일 로그인의 사용자 세션 구분 문제
+<h3>4. 카카오 로그인과 이메일 로그인의 사용자 세션 구분 문제</h3>
 
-    문제<br>
-      로그인 기능 구현 초기에,<br>
-      카카오 소셜 로그인과 일반 이메일 로그인을 동일한 세션 구조로 처리하면서<br>
-      사용자 인증 상태를 구분하기 어려웠음.<br>
-  
-    원인<br>
-      두 로그인 방식 모두 로그인 시 아래와 같이 동일하게 사용자 정보를 세션에 저장함:
+[문제]<br>
+로그인 기능 구현 초기에,<br>
+카카오 소셜 로그인과 일반 이메일 로그인을 동일한 세션 구조로 처리하면서<br>
+사용자 인증 상태를 구분하기 어려웠음.<br>
+
+[원인]<br>
+두 로그인 방식 모두 로그인 시 아래와 같이 동일하게 사용자 정보를 세션에 저장함:
 
         session.setAttribute("member", memberDTO);
   
-      하지만 로그아웃 처리 방식은 로그인 유형에 따라 달라야 했음.<br>
-      예를 들어,<br>
-      - 일반 로그인은 세션 종료로 로그아웃이 완료되지만,<br>
-      - 카카오 로그인은 카카오 API를 통해 로그아웃 처리를 따로 해줘야 했기 때문에<br>
-      로그인 유형을 명시적으로 구분할 수 있는 상태 값이 필요했음.<br>
-      <br>
+하지만 로그아웃 처리 방식은 로그인 유형에 따라 달라야 했음.<br>
+예를 들어,<br>
+- 일반 로그인은 세션 종료로 로그아웃이 완료되지만,<br>
+- 카카오 로그인은 카카오 API를 통해 로그아웃 처리를 따로 해줘야 했기 때문에<br>
+로그인 유형을 명시적으로 구분할 수 있는 상태 값이 필요했음.<br>
+<br>
   💥 초기 코드 (세션 구분 없음)
 
        session.setAttribute("member", memberDTO); // 이메일 & 카카오 로그인 공통 처리
 
-   <br>
-   해결 방법<br>
-     로그인 방식에 따라 별도의 상태 값을 세션에 함께 저장하도록 개선함.<br>
-     예를 들어, 이메일 로그인 시 "email", 카카오 로그인 시 "kakao"라는 값을 추가 저장:<br>
-     <br>
+<br>
+[해결 방법]<br>
+로그인 방식에 따라 별도의 상태 값을 세션에 함께 저장하도록 개선함.<br>
+예를 들어, 이메일 로그인 시 "email", 카카오 로그인 시 "kakao"라는 값을 추가 저장:<br>
+<br>
   ✅ 수정된 코드
 
         session.setAttribute("member", memberDTO);
@@ -294,38 +294,38 @@ ________________________________________________________________________________
         // 또는
         session.setAttribute("memberStatus", "kakao"); // 카카오 로그인
 
-      이후 기능 조건문에서 memberStatus 값을 통해 분기 처리 가능<br>
-    <br>
+이후 기능 조건문에서 memberStatus 값을 통해 분기 처리 가능<br>
+<br>
   
-    배운 점<br>
-      처음에는 세션에 사용자 객체 하나만 저장해도 충분하다고 생각했지만,<br>
-      실제로는 로그인 방식, 접근 권한, 사용자 경험 등의 관점에서 구분된 상태 정보가 매우 중요하다는 것을 배움.<br>
-      특히 소셜 로그인과 일반 로그인은 인증 흐름이 다르고,<br>
-      이에 맞춘 세션 설계와 조건 분기 로직이 필요하다는 점을 실감했다.<br>
+[배운 점]<br>
+처음에는 세션에 사용자 객체 하나만 저장해도 충분하다고 생각했지만,<br>
+실제로는 로그인 방식, 접근 권한, 사용자 경험 등의 관점에서 구분된 상태 정보가 매우 중요하다는 것을 배움.<br>
+특히 소셜 로그인과 일반 로그인은 인증 흐름이 다르고,<br>
+이에 맞춘 세션 설계와 조건 분기 로직이 필요하다는 점을 실감했다.<br>
         
 5. SMS 인증번호 재사용 및 보안 취약 문제
 
-        문제
-        SMS 인증 기능을 구현한 뒤 테스트하는 과정에서,
-        인증번호를 여러 번 입력하거나 인증에 성공한 후에도 같은 인증번호로 계속 인증이 가능한 문제가 발생했다.
+[문제]
+SMS 인증 기능을 구현한 뒤 테스트하는 과정에서,
+인증번호를 여러 번 입력하거나 인증에 성공한 후에도 같은 인증번호로 계속 인증이 가능한 문제가 발생했다.
    
 <img src="https://github.com/user-attachments/assets/e5273ba6-78ee-4155-99ba-5cc44fce87f4">
 
-       원인
-       인증번호를 발급할 때마다 세션에 덮어쓰는 방식으로 저장하여, 이전 인증번호는 무효화됨
-       인증에 성공하더라도 세션에서 인증번호를 제거하지 않아, 동일 세션 내에서 인증번호 재사용이 가능했음
-       전화번호에 대한 형식 검증도 없어 "123" 같은 숫자로도 인증번호 전송이 가능했음
+원인
+인증번호를 발급할 때마다 세션에 덮어쓰는 방식으로 저장하여, 이전 인증번호는 무효화됨
+인증에 성공하더라도 세션에서 인증번호를 제거하지 않아, 동일 세션 내에서 인증번호 재사용이 가능했음
+전화번호에 대한 형식 검증도 없어 "123" 같은 숫자로도 인증번호 전송이 가능했음
         
 <img src="https://github.com/user-attachments/assets/eb1662b7-853c-470d-906a-718023c29fdc">
 
-        해결 방법
-        인증에 성공한 경우 session.removeAttribute("verificationCode")를 사용하여 인증번호를 즉시 세션에서 제거
-        잘못된 형식의 전화번호를 방지하기 위해 정규식을 사용한 유효성 검증 추가
+해결 방법
+인증에 성공한 경우 session.removeAttribute("verificationCode")를 사용하여 인증번호를 즉시 세션에서 제거
+잘못된 형식의 전화번호를 방지하기 위해 정규식을 사용한 유효성 검증 추가
 
-        배운 점
-        세션을 사용할 경우 단순히 저장하는 것뿐만 아니라, 언제 제거할지까지 고려한 설계가 필요하다는 것을 알게 되었다.
-        또한 인증과 같은 민감한 기능일수록 입력값 검증 및 상태 관리의 중요성을 실감할 수 있었다.
-        비록 유효시간 제한 기능은 현재 적용되어 있지 않지만, 추후 보완이 필요한 개선 포인트로 인식하게 되었다.
+배운 점
+세션을 사용할 경우 단순히 저장하는 것뿐만 아니라, 언제 제거할지까지 고려한 설계가 필요하다는 것을 알게 되었다.
+또한 인증과 같은 민감한 기능일수록 입력값 검증 및 상태 관리의 중요성을 실감할 수 있었다.
+비록 유효시간 제한 기능은 현재 적용되어 있지 않지만, 추후 보완이 필요한 개선 포인트로 인식하게 되었다.
 
 <h2>7. 느낀점</h2>
 
