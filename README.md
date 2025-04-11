@@ -303,29 +303,55 @@ isEmpty(), orElseThrow(), orElseGet(), ifPresent() 등 상황에 맞는 안전�
 특히 소셜 로그인과 일반 로그인은 인증 흐름이 다르고,<br>
 이에 맞춘 세션 설계와 조건 분기 로직이 필요하다는 점을 실감했다.<br>
         
-5. SMS 인증번호 재사용 및 보안 취약 문제
+<h3>5. SMS 인증번호 재사용 및 보안 취약 문제</h3>
 
-[문제]
-SMS 인증 기능을 구현한 뒤 테스트하는 과정에서,
-인증번호를 여러 번 입력하거나 인증에 성공한 후에도 같은 인증번호로 계속 인증이 가능한 문제가 발생했다.
-   
-<img src="https://github.com/user-attachments/assets/e5273ba6-78ee-4155-99ba-5cc44fce87f4">
+[문제]<br>
+SMS 인증 기능을 구현한 뒤 테스트하는 과정에서,<br>
+인증번호를 여러 번 입력하거나 인증에 성공한 후에도 같은 인증번호로 계속 인증이 가능한 문제가 발생했다.<br>
+<br>
+[원인]<br>
+- 인증번호를 발급할 때마다 session.setAttribute("verificationCode", code) 방식으로 덮어쓰기만 했기 때문에,<br>
+  이전 인증번호는 무효화되었지만, 인증 성공 후에도 세션에서 인증번호가 제거되지 않음<br>
+- 따라서 같은 세션 내에서는 동일 인증번호를 여러 번 사용할 수 있었음<br>
+- 또한, 클라이언트에서 전화번호에 대한 형식 제한이 없어, "123"과 같은 잘못된 번호로도 인증 요청이 가능했음<br>
+<br>
+💥 오류 발생 코드
 
-원인
-인증번호를 발급할 때마다 세션에 덮어쓰는 방식으로 저장하여, 이전 인증번호는 무효화됨
-인증에 성공하더라도 세션에서 인증번호를 제거하지 않아, 동일 세션 내에서 인증번호 재사용이 가능했음
-전화번호에 대한 형식 검증도 없어 "123" 같은 숫자로도 인증번호 전송이 가능했음
-        
-<img src="https://github.com/user-attachments/assets/eb1662b7-853c-470d-906a-718023c29fdc">
+      // 인증번호 발급 (발급만 하고 제거 로직 없음)
+      session.setAttribute("verificationCode", verificationCode);
 
-해결 방법
-인증에 성공한 경우 session.removeAttribute("verificationCode")를 사용하여 인증번호를 즉시 세션에서 제거
-잘못된 형식의 전화번호를 방지하기 위해 정규식을 사용한 유효성 검증 추가
+[해결 방법]<br>
+- 인증에 성공한 경우, 아래와 같이 세션에서 인증번호를 즉시 제거하도록 처리함:<br>
+<br>
+✅ 수정된 코드
 
-배운 점
-세션을 사용할 경우 단순히 저장하는 것뿐만 아니라, 언제 제거할지까지 고려한 설계가 필요하다는 것을 알게 되었다.
-또한 인증과 같은 민감한 기능일수록 입력값 검증 및 상태 관리의 중요성을 실감할 수 있었다.
-비록 유효시간 제한 기능은 현재 적용되어 있지 않지만, 추후 보완이 필요한 개선 포인트로 인식하게 되었다.
+      if (savedVerificationCode != null && savedVerificationCode.equals(verificationCode)) {
+      session.removeAttribute("verificationCode"); // 인증번호 삭제
+      session.setAttribute("isVerified", true);
+      return ResponseEntity.ok(Map.of("success", true));
+      }
+
+- 또한, 클라이언트(JavaScript) 단에서 전화번호 길이를 기준으로 유효성 검증 로직을 직접 구현함.<br>
+숫자가 10~11자 범위일 때만 전송 버튼이 활성화되며,<br>
+그 외에는 에러 메시지와 함께 스타일 변경이 이루어짐:
+
+      phoneInput.addEventListener("keyup", (e) => {
+          if (phoneInput.value.length >= 10 && phoneInput.value.length <= 11) {
+              sendButton.classList.add("buttonBlack");
+              // 스타일 활성화
+          } else {
+              sendButton.classList.remove("buttonBlack");
+              sendButton.classList.add("gsRKCU");
+              // 에러 메시지 출력
+          }
+      });
+
+[배운 점]<br>
+세션을 사용할 때는 단순히 데이터를 저장하는 것뿐만 아니라,<br>
+"언제, 어떤 조건에서 제거할 것인지"까지 고려한 흐름 설계가 필요하다는 점을 깨달았다.<br>
+또한 인증과 같은 민감한 기능일수록 입력값 검증과 상태 관리가 보안의 핵심이라는 것을 실감했다.<br>
+비록 유효시간 제한 기능은 현재 구현하지 못했지만,<br>
+향후 보완해야 할 개선 포인트로 인식하게 되었다.<br>
 
 <h2>7. 느낀점</h2>
 
