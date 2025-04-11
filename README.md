@@ -165,10 +165,10 @@ ________________________________________________________________________________
 
         file.transferTo(new File(rootPath, uuid.toString() + "_" + file.getOriginalFilename()));
 
-    해결 방법<br>
-      File 객체를 통해 해당 경로가 존재하는지 확인한 후,<br>
-      존재하지 않을 경우 mkdirs()를 통해 디렉토리를 먼저 생성하도록 처리.<br>
-      <br>
+[해결 방법]<br>
+File 객체를 통해 해당 경로가 존재하는지 확인한 후,<br>
+존재하지 않을 경우 mkdirs()를 통해 디렉토리를 먼저 생성하도록 처리.<br>
+<br>
   ✅ 수정된 코드
   
         File directory = new File(rootPath);
@@ -319,7 +319,7 @@ SMS 인증 기능을 구현한 뒤 테스트하는 과정에서,<br>
 
       // 인증번호 발급 (발급만 하고 제거 로직 없음)
       session.setAttribute("verificationCode", verificationCode);
-
+<br>
 [해결 방법]<br>
 - 인증에 성공한 경우, 아래와 같이 세션에서 인증번호를 즉시 제거하도록 처리함:<br>
 <br>
