@@ -246,5 +246,113 @@ Optional is not just a tool to hide nulls,<br>
 but a means for safe and explicit value handling.<br>
 Instead of always using .get(), learn to use isEmpty(), orElseThrow(), orElseGet(), ifPresent(), etc., as appropriate.<br>
 
+<h3>4. Distinguishing Sessions Between Kakao and Email Logins</h3>
+
+[Issue]<br>
+In the early stages of implementing the login feature,<br>
+both Kakao social login and regular email login were handled using the same session structure,<br>
+making it difficult to distinguish user authentication status.<br>
+
+[Cause]<br>
+Both login methods stored user information in the session like this:
+
+        session.setAttribute("member", memberDTO);
+  
+However, the logout process needed to differ depending on the login method.<br>
+For example:<br>
+- Regular login was completed by simply ending the session,<br>
+- While Kakao login required a separate logout call to the Kakao API,<br>
+which made it necessary to explicitly identify the login type.<br><br>
+
+  💥 Initial code (no session distinction)
+
+       session.setAttribute("member", memberDTO); // Common for email & Kakao login
+
+<br>
+[Solution]<br>
+Improved by storing an additional session value to distinguish the login type.<br>
+For example, saving "email" for email login and "kakao" for Kakao login:<br><br>
+
+  ✅ Updated code
+
+        session.setAttribute("member", memberDTO);
+    
+        // Add login type status
+        session.setAttribute("memberStatus", "email"); // Email login
+        // or
+        session.setAttribute("memberStatus", "kakao"); // Kakao login
+
+Afterward, conditions can be handled using the memberStatus value.<br><br>
+  
+[Lesson Learned]<br>
+At first, I thought storing only the user object in the session was enough,<br>
+but I realized that distinguishing state information such as login method, permissions, and user flow is very important.<br>
+Social and email logins have different authentication flows,<br>
+and I learned the importance of customizing session structure and logic accordingly.<br>
+
+<h3>5. SMS Verification Code Reuse & Security Vulnerability</h3>
+
+[Issue]<br>
+After implementing SMS verification, I found that<br>
+users could reuse the same verification code multiple times, even after successful verification.<br><br>
+
+[Cause]<br>
+- Every time a code was issued, it just overwrote the session using session.setAttribute("verificationCode", code),<br>
+  so the old code became invalid, but was never deleted after verification success.<br>
+- As a result, users could keep using the same code within the same session.<br>
+- Also, there was no format check for phone numbers on the client side, so even "123" could trigger a request.<br><br>
+
+💥 Problem code
+
+      // Issue code without removing old one
+      session.setAttribute("verificationCode", verificationCode);
+<br>
+[Solution]<br>
+After successful verification, immediately remove the code from the session:<br><br>
+
+✅ Updated code
+
+      if (savedVerificationCode != null && savedVerificationCode.equals(verificationCode)) {
+          session.removeAttribute("verificationCode"); // Remove the code
+          session.setAttribute("isVerified", true);
+          return ResponseEntity.ok(Map.of("success", true));
+      }
+
+- Also added front-end (JavaScript) validation to only enable the send button when the phone number is 10-11 digits:
+
+      phoneInput.addEventListener("keyup", (e) => {
+          if (phoneInput.value.length >= 10 && phoneInput.value.length <= 11) {
+              sendButton.classList.add("buttonBlack");
+              // Enable button style
+          } else {
+              sendButton.classList.remove("buttonBlack");
+              sendButton.classList.add("gsRKCU");
+              // Show error message
+          }
+      });
+
+[Lesson Learned]<br>
+When using sessions, it’s not just about saving data—<br>
+you must also plan when and under what conditions to clear it.<br>
+For sensitive features like authentication, validation and session control are key to security.<br>
+Although I haven’t implemented code expiration yet, it’s now on my improvement list.<br>
+
+<h2>7. Reflections</h2>
+
+✨ <strong>The Importance of Structured Planning</strong><br>
+Through this project, I truly realized how solid planning determines the overall flow of development. In the beginning, I approached the work mainly from an implementation perspective. However, as I progressed with feature development, I encountered repeated confusion in areas such as detailed workflows, screen transitions, and data structures—elements that hadn't been clearly organized beforehand. I learned that well-defined planning is essential for seamless collaboration between publishing and backend development, and it also significantly reduces unnecessary communication overhead during the development process.
+
+✨ <strong>Solving Problems Together: The Power of Effective Communication</strong><br>
+When I encountered unexpected issues during development, I initially spent a lot of time trying to solve them on my own. However, I realized that asking for help at the right moment is actually much more efficient. Especially when dealing with unfamiliar technologies or logic, discussing with the instructor or teammates led to faster and more accurate solutions. Moving forward, I intend to actively communicate and take a collaborative approach to problem-solving.
+
+✨ <strong>A Project Is Built Together</strong><br>
+No one can complete a project alone. Through this team project, I experienced the value of collaboration—leveraging each other's strengths and supporting each other's weaknesses. Thanks to a shared sense of responsibility for our individual roles, we were able to complete the project smoothly. I learned a lot through the process of thinking and making decisions together. In the end, this reaffirmed that great results come not only from technical skills, but also from strong teamwork.
+
+✨ <strong>Growth Through New Challenges and Unfamiliar Structures</strong><br>
+One of the most memorable aspects of this project was how we divided roles—my publishing work was connected to a teammate’s server, and I also integrated my backend into another teammate’s publishing code. It wasn’t easy to interpret unfamiliar code structures and understand the original intent, but the process helped me develop the ability to comprehend others’ code and collaborate more flexibly. Through this experience, I learned the importance of respecting and embracing diverse development styles, and significantly improved my adaptability in real-world collaborative environments.
+
+✨ <strong>A Sense of Accomplishment Through Completion</strong><br>
+This project gave me a deep sense of accomplishment—not just from implementing individual features, but from experiencing the entire process firsthand, including planning, publishing, backend development, and collaboration, to complete a fully functioning web service. Although many parts were unfamiliar and challenging at first, solving each issue step by step and creating a finished product with my team became a meaningful experience and a source of confidence. Based on the experience and lessons gained through this project, I’m motivated to continue growing into a more skilled and capable developer.
+
 
  
